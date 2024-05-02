@@ -1,0 +1,100 @@
+/* print.css */
+header, footer, aside, nav, form, iframe, .menu, .hero, .adslot {
+  display: none;
+}
+
+article {
+  column-width: 17em;
+  column-gap: 3em;
+}
+
+* {
+  background-image: none !important;
+}
+
+img, svg {
+  display: none !important;
+}
+
+img.print, svg.print {
+  display: block;
+  max-width: 100%;
+}
+
+a::after {
+  content: " (" attr(href) ")";
+}
+
+
+.print {
+  display: none;
+}
+
+
+.btn-print {display:none;}
+
+@media print {
+
+  html,body{
+    width: 8.5in;
+    height: 5.5in;
+    display: block;
+
+  }
+  /* visible when printed */
+  .print {
+    display: block;
+	/* font-weight: bold;
+  font-size: 18px;*/
+  font-family: "calibri";
+    
+  }
+
+}
+/*
+.pagebreak {
+  clear: both;
+  page-break-after: always;
+}
+*/
+/*
+table, img, svg {
+  break-inside: auto;
+}
+*/
+/* target all pages */
+@page {
+/*  margin-top: 1cm;
+  margin-left:0.5cm;
+  margin-right:1cm;
+  margin-bottom:0.5cm;
+  */
+  size: 21.59cm 13.97cm;
+  /*font-weight: bold;
+ /* font-size: 18px;*/
+  font-family: "calibri";
+
+}
+
+
+/* target the first page only 
+@page :first {
+  margin-top: 0.50cm;
+}
+*/
+/* target left (even-numbered) pages only 
+@page :left {
+  margin-right: 0.50cm;
+}
+*/
+/* target right (odd-numbered) pages only 
+@page :right {
+  margin-left: 0.50cm;
+}
+
+table.report-container {
+  page-break-after:always;
+}*/
+thead.report-header {
+  display:table-header-group;
+}
