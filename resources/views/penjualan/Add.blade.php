@@ -95,14 +95,21 @@
                                             <div class="invalid-validasi"></div>
                                         </div>
                                     </div>
+                                    <div class="col-md-2">
+                                        <label for="tgl_kadaluarsa">Transfer</label>
+                                        <div class="mb-2">
+                                            <input class="form-check-input" type="checkbox" value=""
+                                                id="transferCheck">
+                                        </div>
+                                    </div>
                                 </div>
                                 <hr>
                                 <div class="row">
                                     <div class="col-md-2">
                                         <div class="mb-2">
                                             <label class="form-label">Item <code>*</code></label>
-                                            <select class="form-control select select2 produk" name="produk" id="produk"
-                                                required>
+                                            <select class="form-control select select2 produk" name="produk"
+                                                id="produk" required>
                                                 <option value="">-- PILIH --</option>
                                                 @foreach ($items as $ra)
                                                     <option value="{{ $ra->id }}" data-id="{{ $ra->nama }}">
@@ -118,7 +125,7 @@
                                     <div class="col-md-2">
                                         <div class="mb-2">
                                             <label for="jumlah">Jumlah <code>*</code></label>
-                                            <input type="number" class="form-control" id="jumlah" name="jumlah"
+                                            <input type="text" class="form-control" id="jumlah" name="jumlah"
                                                 placeholder="Jumlah" autocomplete="off" disabled required />
                                             <div class="invalid-feedback">
                                                 Data wajib diisi.
@@ -143,7 +150,7 @@
                                         <div class="mb-2">
                                             <label for="Satuan">Harga</label>
                                             <input type="text" class="form-control" id="harga" name="harga"
-                                                placeholder="Harga" autocomplete="off" readonly />
+                                                placeholder="Harga" autocomplete="off" />
                                             <input type="hidden" name="harga_value" id="harga_value">
                                         </div>
                                     </div>
@@ -185,7 +192,7 @@
                                                     name="value_total_penjualan" value="0" placeholder="Rp">
                                             </div>
                                         </div>
-                                        <div class="row mb-2">
+                                        <div class="row mb-2" hidden>
                                             <label class="col-md-3 text-right">Bayar</label>
                                             <div class="col-md-3">
                                                 <input type="text" class="form-control text-center"
@@ -193,7 +200,7 @@
                                                     placeholder="Rp">
                                             </div>
                                         </div>
-                                        <div class="row mb-2">
+                                        <div class="row mb-2" hidden>
                                             <label class="col-md-3 text-right">Kembalian</label>
                                             <div class="col-md-3">
                                                 <input type="text" class="form-control text-center"
@@ -236,9 +243,10 @@
                 var id_item = select_peminjam.options[select_peminjam.selectedIndex].value;
                 var nama_produk = select_peminjam.options[select_peminjam.selectedIndex].getAttribute('data-id');
                 var satuan = document.getElementById('satuan').value;
-                var harga = document.getElementById('harga').value;
-                var harga_value = document.getElementById('harga_value').value;
-                var total = parseFloat(jumlah) * parseFloat(harga_value);
+                var har = document.getElementById('harga').value;
+                let harga = har.replace(/\./g, "");
+                console.log("🚀 ~ btnTambahProduk ~ res:", harga)
+                var total = parseFloat(jumlah) * parseFloat(harga);
                 var subtotal = total;
                 sum(total);
                 var total = formatRupiah(total);
@@ -246,7 +254,7 @@
                 document.getElementById('jumlah').value = '';
                 $('#produk').val("").trigger('change')
 
-                if (id_item == '' || jumlah == '' || harga_value == '') {
+                if (id_item == '' || jumlah == '' || harga == '') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Tanda * (bintang) wajib Diisi',
@@ -255,21 +263,21 @@
                     })
                 } else {
                     $("#tableBarang tr:last").after(`
-                        <tr>
-                            <td class="text-center">
-                                <a href="#" class="text-danger delete-record">
-                                    <i class="mdi mdi-delete font-size-18"></i>
-                                </a>
-                            </td>
-                            <td class="text-center" hidden>${id_item}</td>
-                            <td class="text-center">${nama_produk}</td>
-                            <td class="text-center">${jumlah}</td>
-                            <td class="text-center">${satuan}</td>
-                            <td class="text-center">${harga}</td>
-                            <td class="text-center">${total}</td>
-                            <td class="text-center" hidden>${subtotal}</td>
-                        </tr>
-                    `)
+                    <tr>
+                        <td class="text-center">
+                            <a href="#" class="text-danger delete-record">
+                                <i class="mdi mdi-delete font-size-18"></i>
+                            </a>
+                        </td>
+                        <td class="text-center" hidden>${id_item}</td>
+                        <td class="text-center">${nama_produk}</td>
+                        <td class="text-center">${jumlah}</td>
+                        <td class="text-center">${satuan}</td>
+                        <td class="text-center">${har}</td>
+                        <td class="text-center">${total}</td>
+                        <td class="text-center" hidden>${subtotal}</td>
+                    </tr>
+                `)
                 }
             }
         }
@@ -378,96 +386,102 @@
                 });
             });
 
-            $("#bayar_penjualan").keyup(function() {
-                var bayar_penjualan = $(this).val();
-                var value_total_penjualan = document.getElementById('value_total_penjualan').value;
-                document.getElementById("kembalian_penjualan").value = formatRupiah(bayar_penjualan -
-                    value_total_penjualan);
+            $("#harga").keyup(function() {
+                var harga = $(this).val();
+                document.getElementById('harga').value = formatRupiah(harga);
             });
 
+            // $("#bayar_penjualan").keyup(function() {
+            //     var bayar_penjualan = $(this).val();
+            //     var value_total_penjualan = document.getElementById('value_total_penjualan').value;
+            //     document.getElementById("kembalian_penjualan").value = formatRupiah(bayar_penjualan -
+            //         value_total_penjualan);
+            // });
+
             $("#save").on('click', function() {
-                var bayar_penjualan = document.getElementById('bayar_penjualan').value;
-                if (bayar_penjualan) {
-                    let datapenjualan = []
+                // var bayar_penjualan = document.getElementById('bayar_penjualan').value;
+                // if (bayar_penjualan) {
+                let datapenjualan = []
 
-                    $("#tableBarang").find("tr").each(function(index, element) {
-                        let tableData = $(this).find('td'),
-                            id_item = tableData.eq(1).text(),
-                            jml = tableData.eq(3).text(),
-                            harga = tableData.eq(5).text()
+                $("#tableBarang").find("tr").each(function(index, element) {
+                    let tableData = $(this).find('td'),
+                        id_item = tableData.eq(1).text(),
+                        jml = tableData.eq(3).text(),
+                        harga = tableData.eq(5).text()
 
-                        if (id_item != '') {
-                            datapenjualan.push({
-                                id_item,
-                                jml,
-                                harga
-                            });
-                        }
-                    });
-
-                    if (datapenjualan.length > 0) {
-                        var id_customer = document.getElementById('nama').value; // dropdown customer
-                        var date = document.getElementById('tgl_penjualan').value;
-                        var total = document.getElementById('value_total_penjualan').value;
-                        var invalidCheck = document.getElementById('invalidCheck').checked;
-                        var add_customer = document.getElementById('add_customer').value;
-                        var add_kontak = document.getElementById('add_kontak').value;
-                        var add_alamat = document.getElementById('add_alamat').value;
-
-                        jQuery.ajax({
-                            type: "POST",
-                            url: '{{ route('penjualan.store') }}',
-                            dataType: 'json',
-                            data: {
-                                "_token": "{{ csrf_token() }}",
-                                date,
-                                total,
-                                id_customer,
-                                invalidCheck,
-                                add_customer,
-                                add_kontak,
-                                add_alamat,
-                                datapenjualan,
-                                bayar_penjualan
-                            },
-                            success: (response) => {
-                                if (response.code === 200) {
-                                    Swal.fire(
-                                        'Success',
-                                        'Data Penjualan Berhasil di masukan',
-                                        'success'
-                                    ).then(() => {
-                                        var APP_URL = {!! json_encode(url('/')) !!}
-                                        window.location = APP_URL +
-                                            '/penjualan/' + response.id
-                                    })
-                                } else {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Tanda * (bintang) wajib diisi',
-                                        showConfirmButton: false,
-                                        timer: 1500,
-                                    })
-                                }
-                            },
-                            error: err => console.log(err)
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Tidak ada Produk',
-                            showConfirmButton: false,
-                            timer: 1500,
+                    if (id_item != '') {
+                        datapenjualan.push({
+                            id_item,
+                            jml,
+                            harga
                         });
                     }
+                });
+
+                if (datapenjualan.length > 0) {
+                    var id_customer = document.getElementById('nama').value; // dropdown customer
+                    var date = document.getElementById('tgl_penjualan').value;
+                    var total = document.getElementById('value_total_penjualan').value;
+                    var invalidCheck = document.getElementById('invalidCheck').checked;
+                    var add_customer = document.getElementById('add_customer').value;
+                    var add_kontak = document.getElementById('add_kontak').value;
+                    var add_alamat = document.getElementById('add_alamat').value;
+                    var transferCheck = document.getElementById('transferCheck').checked;
+
+                    jQuery.ajax({
+                        type: "POST",
+                        url: '{{ route('penjualan.store') }}',
+                        dataType: 'json',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            date,
+                            total,
+                            id_customer,
+                            invalidCheck,
+                            add_customer,
+                            add_kontak,
+                            add_alamat,
+                            datapenjualan,
+                            transferCheck
+                        },
+                        success: (response) => {
+                            if (response.code === 200) {
+                                Swal.fire(
+                                    'Success',
+                                    'Data Penjualan Berhasil di masukan',
+                                    'success'
+                                ).then(() => {
+                                    var APP_URL = {!! json_encode(url('/')) !!}
+                                    window.location = APP_URL +
+                                        '/penjualan/' + response.id
+                                })
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Tanda * (bintang) wajib diisi',
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                })
+                            }
+                        },
+                        error: err => console.log(err)
+                    });
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Customer belum bayar?',
+                        title: 'Tidak ada Produk',
                         showConfirmButton: false,
                         timer: 1500,
                     });
                 }
+                // } else {
+                //     Swal.fire({
+                //         icon: 'error',
+                //         title: 'Customer belum bayar?',
+                //         showConfirmButton: false,
+                //         timer: 1500,
+                //     });
+                // }
             });
         });
     </script>

@@ -94,5 +94,7 @@ Route::group(
         Route::resource('/detail_penjualan', DetailPenjualanController::class);
         Route::get('print/{id}', [PenjualanController::class, 'print'])->name('penjualan.print');
         Route::get('pos/{id}', [PenjualanController::class, 'pos'])->name('penjualan.pos');
+        Route::get('report', [PenjualanController::class, 'report'])->name('penjualan.report');
+        Route::get('print_laporan', [PenjualanController::class, 'print_laporan'])->name('penjualan.print_laporan');
     }
 );

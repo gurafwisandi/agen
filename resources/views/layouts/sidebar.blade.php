@@ -75,11 +75,11 @@
                 <span key="t-dashboards">Penjualan</span>
             </a>
         </li>
-        {{-- <li>
-            <a href="{{ route('dashboard') }}" class="waves-effect">
+        <li>
+            <a href="{{ route('penjualan.report') }}" class="waves-effect">
                 <i class="bx bx-package"></i>
-                <span key="t-dashboards">Opname</span>
+                <span key="t-dashboards">Report</span>
             </a>
-        </li> --}}
+        </li>
     </ul>
 </div>

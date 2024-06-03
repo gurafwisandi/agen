@@ -95,7 +95,8 @@ class PenjualanController extends Controller
                 $penjualan->id_customer = $request->id_customer;
             }
             $penjualan->total = $request->total;
-            $penjualan->total_bayar = $request->bayar_penjualan;
+            $penjualan->total_bayar = $request->bayar_penjualan ? $request->bayar_penjualan : 0;
+            $penjualan->transfer = $request->transferCheck == 'true' ? 'Y' : null;
             $penjualan->id_user = Auth::user()->id;
             $penjualan->save();
             $insertedId = $penjualan->id;
@@ -292,5 +293,88 @@ class PenjualanController extends Controller
         ];
 
         return view('penjualan.pos')->with($data);
+    }
+
+    public function report()
+    {
+        if (isset($_GET['start']) && $_GET['end'] != '') {
+            $hasil = DB::table('detail_penjualan')
+                ->selectRaw('penjualan.no_invoice')
+                ->selectRaw('penjualan.date')
+                ->selectRaw('customer.nama as customer')
+                ->selectRaw('item.nama')
+                ->selectRaw('detail_penjualan.jml')
+                ->selectRaw('satuan')
+                ->selectRaw('detail_penjualan.harga')
+                ->selectRaw('penjualan.total')
+                ->selectRaw('penjualan.transfer')
+                ->Join('penjualan', 'penjualan.id', 'detail_penjualan.id_penjualan')
+                ->Join('item', 'item.id', 'detail_penjualan.id_item')
+                ->Join('satuan', 'satuan.id', 'detail_penjualan.id_satuan')
+                ->leftJoin('customer', 'customer.id', 'penjualan.id_customer')
+                ->where('penjualan.date', '>=', $_GET['start'])
+                ->where('penjualan.date', '<=', $_GET['end'])
+                ->orderBy('penjualan.no_invoice')
+                ->wherenull('penjualan.deleted_at')
+                ->get();
+        } else {
+            $hasil = DB::table('detail_penjualan')
+                ->selectRaw('penjualan.no_invoice')
+                ->selectRaw('penjualan.date')
+                ->selectRaw('customer.nama as customer')
+                ->selectRaw('item.nama')
+                ->selectRaw('detail_penjualan.jml')
+                ->selectRaw('satuan')
+                ->selectRaw('detail_penjualan.harga')
+                ->selectRaw('penjualan.total')
+                ->selectRaw('penjualan.transfer')
+                ->Join('penjualan', 'penjualan.id', 'detail_penjualan.id_penjualan')
+                ->Join('item', 'item.id', 'detail_penjualan.id_item')
+                ->Join('satuan', 'satuan.id', 'detail_penjualan.id_satuan')
+                ->leftJoin('customer', 'customer.id', 'penjualan.id_customer')
+                ->wherenull('penjualan.deleted_at')
+                ->where('penjualan.date', date('Y-m-d'))
+                ->orderBy('penjualan.no_invoice')
+                ->get();
+        }
+
+        $data = [
+            'menu' => 'Rekap',
+            'submenu' => $this->submenu,
+            'label' => 'Rekap ' . $this->submenu,
+            'lists' => $hasil
+        ];
+        return view('penjualan.Report')->with($data);
+    }
+
+    public function print_laporan(Request $request)
+    {
+        $hasil = DB::table('detail_penjualan')
+            ->selectRaw('penjualan.no_invoice')
+            ->selectRaw('penjualan.date')
+            ->selectRaw('customer.nama as customer')
+            ->selectRaw('item.nama')
+            ->selectRaw('detail_penjualan.jml')
+            ->selectRaw('satuan')
+            ->selectRaw('detail_penjualan.harga')
+            ->selectRaw('penjualan.total')
+            ->selectRaw('penjualan.transfer')
+            ->Join('penjualan', 'penjualan.id', 'detail_penjualan.id_penjualan')
+            ->Join('item', 'item.id', 'detail_penjualan.id_item')
+            ->Join('satuan', 'satuan.id', 'detail_penjualan.id_satuan')
+            ->leftJoin('customer', 'customer.id', 'penjualan.id_customer')
+            ->where('penjualan.date', '>=', $_GET['start'])
+            ->where('penjualan.date', '<=', $_GET['end'])
+            ->orderBy('penjualan.no_invoice')
+            ->wherenull('penjualan.deleted_at')
+            ->get();
+
+        $data = [
+            'start' => $_GET['start'],
+            'end' => $_GET['end'],
+            'lists' => $hasil,
+        ];
+
+        return view('penjualan.Print_report')->with($data);
     }
 }

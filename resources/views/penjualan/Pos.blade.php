@@ -40,7 +40,7 @@
     </style>
 </head>
 
-<body onload="javascript:window.print() ;drawer();setTimeout(function () {window.close();},100);">
+<body onload="javascript:window.print();setTimeout(function () {window.close();},500);">
 
     <body>
         <div class="print">
@@ -84,6 +84,9 @@
                                     <tr>
                                         <td colspan="2">
                                             {{ $list->customer ? $list->customer->nama : '-' }}
+                                            <?php if ($list->transfer) {
+                                                echo '<br> Transfer';
+                                            } ?>
                                         </td>
                                     </tr>
                                 </table>
@@ -98,7 +101,8 @@
                                                 <td class="text-center">
                                                     {{ number_format($det->jml) . ' ' . $det->satuan->satuan }}</td>
                                                 <td class="text-right">{{ number_format($det->harga) }}</td>
-                                                <td class="text-right">{{ number_format($det->jml * $det->harga) }}</td>
+                                                <td class="text-right">{{ number_format($det->jml * $det->harga) }}
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -107,7 +111,7 @@
                                             <td colspan="2"><i><b>TOTAL</b></i></td>
                                             <td class="text-right">{{ number_format($list->total) }}</td>
                                         </tr>
-                                        <tr>
+                                        {{-- <tr>
                                             <td colspan="2"><i><b>BAYAR</b></i></td>
                                             <td class="text-right">{{ number_format($list->total_bayar) }}</td>
                                         </tr>
@@ -116,7 +120,7 @@
                                             <td class="text-right">
                                                 {{ number_format($list->total_bayar - $list->total) }}
                                             </td>
-                                        </tr>
+                                        </tr> --}}
                                         <tr>
                                             <td colspan="3" class="text-center">== TERIMAKASIH ==</td>
                                         </tr>
